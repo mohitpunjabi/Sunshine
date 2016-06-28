@@ -1,10 +1,15 @@
 package com.mohitpunjabi.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -56,16 +61,48 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    class FetchWeatherTask extends AsyncTask<String, Void, String> {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-        private static final String LOG_TAG = "FetchWeatherTask";
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.actions_refresh) {
+            new FetchWeatherTask().execute("94043");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.forecastfragment, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    class FetchWeatherTask extends AsyncTask<String, Void, Void> {
+
+        private final String LOG_TAG = "FetchWeatherTask";
+        private final String BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily";
+        private final String APP_KEY = "6b935588e3eabab858391557ff79c785";
+        private final String QUERY_PARAM = "q";
+        private final String UNITS_PARAM = "units";
+        private final String DAYS_PARAM = "cnt";
+        private final String APPID_PARAM = "appid";
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Void doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
+
+            String postCode = params[0];
+            final String units = "metric";
+            final int days = 7;
 
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
@@ -74,10 +111,15 @@ public class ForecastFragment extends Fragment {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are available at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
-                URL url = new URL(
-                        "http://api.openweathermap.org/data/2" +
-                                ".5/forecast/daily?q=94043&mode=json&units=metric&cnt=7&&appid" +
-                                "=6b935588e3eabab858391557ff79c785");
+                Uri uri = Uri.parse(BASE_URL).buildUpon()
+                             .appendQueryParameter(QUERY_PARAM, postCode)
+                             .appendQueryParameter(UNITS_PARAM, units)
+                             .appendQueryParameter(DAYS_PARAM, Integer.toString(days))
+                             .appendQueryParameter(APPID_PARAM, APP_KEY)
+                             .build();
+
+                Log.d(LOG_TAG, "URI of the weather API: " + uri.toString());
+                URL url = new URL(uri.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -125,7 +167,9 @@ public class ForecastFragment extends Fragment {
                 }
             }
 
-            return forecastJsonStr;
+            Log.v(LOG_TAG, forecastJsonStr);
+
+            return null;
         }
     }
 
