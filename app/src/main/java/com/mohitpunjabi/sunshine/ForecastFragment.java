@@ -32,7 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -102,11 +101,11 @@ public class ForecastFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+
     private void updateWeather() {
         String location = PreferenceManager.getDefaultSharedPreferences(getContext())
                                            .getString(getString(R.string.pref_location_key),
                                                       getString(R.string.pref_location_default));
-
         new FetchWeatherTask().execute(location);
     }
 
