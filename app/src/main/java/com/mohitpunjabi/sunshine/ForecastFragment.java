@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -89,7 +90,11 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.actions_refresh) {
-            new FetchWeatherTask().execute("94043");
+            String location = PreferenceManager.getDefaultSharedPreferences(getContext())
+                                               .getString(getString(R.string.pref_location_key),
+                                                          getString(R.string.pref_location_default));
+
+            new FetchWeatherTask().execute(location);
             return true;
         }
 
