@@ -1,6 +1,7 @@
 package com.mohitpunjabi.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -127,7 +128,9 @@ public class ForecastFragment extends Fragment {
             BufferedReader reader = null;
 
             String postCode = params[0];
-            final String units = "metric";
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            final String units = prefs.getString(getString(R.string.pref_temperatureUnit_key),
+                                                 getString(R.string.pref_temperatureUnit_default));
             final int days = 7;
 
             // Will contain the raw JSON response as a string.

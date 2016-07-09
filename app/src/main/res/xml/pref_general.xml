@@ -8,4 +8,13 @@
         android:singleLine="true"
         android:title="@string/pref_location_label"/>
 
+    <ListPreference
+        android:defaultValue="@string/pref_temperatureUnit_default"
+        android:dialogTitle="@string/pref_temperatureUnit_title"
+        android:entries="@array/pref_temperatureUnit_entries"
+        android:entryValues="@array/pref_temperatureUnit_values"
+        android:key="@string/pref_temperatureUnit_key"
+        android:summary="%s"
+        android:title="@string/pref_temperatureUnit_title"/>
+
 </PreferenceScreen>
