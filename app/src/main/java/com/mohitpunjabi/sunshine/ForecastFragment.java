@@ -13,8 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +65,15 @@ public class ForecastFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String forecast = mForecastAdapter.getItem(position);
+                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return rootView;
     }
 
@@ -90,7 +101,7 @@ public class ForecastFragment extends Fragment {
 
     class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
-        private final String LOG_TAG = "FetchWeatherTask";
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
         private final String BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily";
         private final String APP_KEY = "6b935588e3eabab858391557ff79c785";
         private final String QUERY_PARAM = "q";
@@ -182,7 +193,7 @@ public class ForecastFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String[] weatherData) {
-            if(weatherData != null) {
+            if (weatherData != null) {
                 mForecastAdapter.clear();
                 mForecastAdapter.addAll(weatherData);
             }
